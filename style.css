@@ -38,6 +38,11 @@ body{
     left: 150%;
 }
 
+.card:hover {
+    transform: translateY(-12px) scale(1.03);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+}
+
 .search{
     display: flex;
     justify-content: space-between;
