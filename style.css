@@ -8,39 +8,16 @@ body{
     background: #222;
 
 }
-.card {
-    background: var(--gradient);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: var(--shadow-lg),
-                inset 0 0 40px rgba(255,255,255,0.15);
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-}
-.card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 40%;
-    height: 200%;
-    background: linear-gradient(120deg, 
-        rgba(255,255,255,0) 30%, 
-        rgba(255,255,255,0.4) 50%, 
-        rgba(255,255,255,0) 70%);
-    transform: skewX(-25deg);
-    transition: all 0.8s;
-    opacity: 0;
-}
-.card:hover::before {
-    opacity: 1;
-    left: 150%;
-}
-
-.card:hover {
-    transform: translateY(-12px) scale(1.03);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+.card{
+    width: 90%;
+    max-width: 470px;
+    margin: 100px auto 0;
+    background: linear-gradient(135deg, #00feba, #5b548a);
+    border-radius: 25px;
+    padding: 40px 35px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    text-align: center;
 }
 
 .search{
