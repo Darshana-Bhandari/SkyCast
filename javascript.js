@@ -15,7 +15,7 @@ const el = {
     error: document.querySelector(".error-message") // Ensure this exists in your HTML
 };
 
-// 1. Core API Fetching Logic
+
 async function fetchWeather(paramString) {
     const url = `${CONFIG.apiUrl}?units=metric&${paramString}&appid=${CONFIG.apiKey}`;
     const response = await fetch(url);
@@ -26,7 +26,6 @@ async function fetchWeather(paramString) {
     return await response.json();
 }
 
-// 2. UI Updating Logic
 function updateUI(data) {
     // Hide error display if previous attempt failed
     if (el.error) el.error.style.display = "none"; 
