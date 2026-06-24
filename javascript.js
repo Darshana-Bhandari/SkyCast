@@ -14,9 +14,9 @@ async function checkWeather(city) {
         }
 
         const data = await response.json();
-        console.log(data);   // ← Open browser console (F12) to see data
+        console.log(data);   // Open console (F12) to see full data
 
-        // Update City
+        // Update City Name
         document.querySelector(".city").innerHTML = data.name;
 
         // Update Temperature
@@ -28,32 +28,13 @@ async function checkWeather(city) {
         // Update Wind Speed
         document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
 
-       if(data.weather[0].main == "Clouds") {
-            document.querySelector(".weather").src = "clouds.png";
-        }
-        else if(data.weather[0].main == "Clear") {
-            document.querySelector(".weather").src = "clear.png";
-        }
-        else if(data.weather[0].main == "Rain") {
-            document.querySelector(".weather").src = "rain.png";
-        }
-        else if(data.weather[0].main == "Drizzle") {
-            document.querySelector(".weather").src = "drizzle.png";
-        }
-        else if(data.weather[0].main == "Mist") {
-            document.querySelector(".weather").src = "mist.png";
-        }
-        else if(data.weather[0].main == "Snow") {
-            document.querySelector(".weather").src = "snow.png";
-        }
-        else if(data.weather[0].main == "wind") {
-            document.querySelector(".weather").src = "wind.png";
-        }
-
+        // Update Weather Icon (Best & Easiest Method)
+        const iconCode = data.weather[0].icon;
+        weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
 
     } catch (error) {
         console.error(error);
-        alert("Error: " + error.message + "\nPlease check city name spelling.");
+        alert("Error: " + error.message + "\nPlease check the city name spelling.");
     }
 }
 
