@@ -3,6 +3,7 @@ const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q="
 
 const searchBox = document.querySelector(".search input");
 const searchBtn = document.querySelector(".search button");
+const weatherIcon = document.querySelector(".weather");
 
 async function checkWeather(city) {
     try {
@@ -27,11 +28,28 @@ async function checkWeather(city) {
         // Update Wind Speed
         document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
 
-        // Update Weather Icon
-        const weatherIcon = document.querySelector(".weather img");
-        if (weatherIcon) {
-            weatherIcon.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+       if(data.weather[0].main == "Clouds") {
+            document.querySelector(".weather").src = "clouds.png";
         }
+        else if(data.weather[0].main == "Clear") {
+            document.querySelector(".weather").src = "clear.png";
+        }
+        else if(data.weather[0].main == "Rain") {
+            document.querySelector(".weather").src = "rain.png";
+        }
+        else if(data.weather[0].main == "Drizzle") {
+            document.querySelector(".weather").src = "drizzle.png";
+        }
+        else if(data.weather[0].main == "Mist") {
+            document.querySelector(".weather").src = "mist.png";
+        }
+        else if(data.weather[0].main == "Snow") {
+            document.querySelector(".weather").src = "snow.png";
+        }
+        else if(data.weather[0].main == "wind") {
+            document.querySelector(".weather").src = "wind.png";
+        }
+
 
     } catch (error) {
         console.error(error);
