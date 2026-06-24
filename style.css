@@ -7,6 +7,8 @@
 
 body {
     background: #c0e3ee;
+    transition: background 0.6s ease;
+    min-height: 100vh;
 }
 
 .card {
@@ -46,6 +48,7 @@ body {
                 box-shadow 0.4s ease;
     cursor: default;
     position: relative;
+    z-index: 1; /* sit above the full-page animation layer */
     overflow: hidden;
 }
 .card::before {
@@ -101,19 +104,18 @@ body {
 
 
 /* ====================== WEATHER ANIMATIONS ====================== */
-.card {
-    position: relative;
-    overflow: hidden;
-}
-
+/* Lives at the BODY level (script.js re-parents it there), covering the
+   full viewport behind the card — so the sun/rain/snow play across the
+   whole page instead of being cropped inside the small card. */
 .weather-animations {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     pointer-events: none;
     overflow: hidden;
-    border-radius: 20px; /* Match your card */
-    z-index: 0;
+    z-index: -1; /* behind the card */
 }
 
 /* Clouds */
@@ -139,7 +141,7 @@ body {
 }
 
 @keyframes fall {
-    to { transform: translateY(700px); }
+    to { transform: translateY(110vh); }
 }
 
 /* Snow */
@@ -152,7 +154,7 @@ body {
 }
 
 @keyframes snowfall {
-    to { transform: translateY(700px) rotate(360deg); }
+    to { transform: translateY(110vh) rotate(360deg); }
 }
 
 /* Mist / Fog */
@@ -192,6 +194,8 @@ body {
     align-items: center;
     border-radius: 25px;
     transition: all 0.4s ease;
+    position: relative;
+    z-index: 2;
 }
 
 .search:hover {
@@ -249,6 +253,8 @@ body {
     width: 170px;
     margin-top: 30px;
     animation: bounce 3s infinite ease-in-out;
+    position: relative;
+    z-index: 2;
 }
 
 @keyframes bounce {
@@ -266,12 +272,16 @@ body {
     text-shadow:
         0 0 20px rgba(255,255,255,0.3),
         0 0 40px rgba(255,255,255,0.2);
+    position: relative;
+    z-index: 2;
 }
 
 .weather h2 {
     font-size: 45px;
     font-weight: 400;
     margin-top: -10px;
+    position: relative;
+    z-index: 2;
 }
 
 .details {
@@ -280,6 +290,8 @@ body {
     align-items: center;
     padding: 0 20px;
     margin-top: 50px;
+    position: relative;
+    z-index: 2;
 }
 
 .col {

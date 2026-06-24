@@ -15,6 +15,16 @@ const el = {
     animations: document.querySelector(".weather-animations")
 };
 
+// ── Move the animation layer out of the card ───────────────────────────────
+// This is the key fix: the card clips/crops the animations because it has
+// overflow:hidden + rounded corners + a fixed small width. By re-parenting
+// the layer to <body> (position: fixed, full viewport — see CSS), the sun,
+// rain, and snow can render across the whole page instead of being squeezed
+// and cut off inside the card.
+if (el.animations && el.animations.parentElement !== document.body) {
+    document.body.appendChild(el.animations);
+}
+
 // ── Icon Map (overrides OpenWeather icon with correct one) ────────────────────
 // Uses OpenWeather's own icons but picks the RIGHT one based on our logic
 const ICON_MAP = {
@@ -28,16 +38,36 @@ const ICON_MAP = {
     mist:        "https://openweathermap.org/img/wn/50d@2x.png",  // mist/fog
 };
 
+// Maps an icon "type" to one of the body background classes already
+// defined in your CSS (body.sunny / .cloudy / .rainy / .snowy).
+const BODY_CLASS_MAP = {
+    sunny:        "sunny",
+    partlyCloudy: "sunny",
+    cloudy:       "cloudy",
+    mist:         "cloudy",
+    rain:         "rainy",
+    drizzle:      "rainy",
+    thunderstorm: "rainy",
+    snow:         "snowy"
+};
+
 // ── helpers ───────────────────────────────────────────────────────────────────
 
 function clearAnimations() {
     if (el.animations) el.animations.innerHTML = "";
 }
 
+function setBodyClass(type) {
+    document.body.classList.remove("sunny", "cloudy", "rainy", "snowy");
+    const cls = BODY_CLASS_MAP[type];
+    if (cls) document.body.classList.add(cls);
+}
+
 function setIcon(type) {
     if (el.icon && ICON_MAP[type]) {
         el.icon.src = ICON_MAP[type];
     }
+    setBodyClass(type);
 }
 
 // ── animation builders ────────────────────────────────────────────────────────
@@ -46,8 +76,8 @@ function createSun() {
     const sun = document.createElement("div");
     sun.style.cssText = `
         position: absolute;
-        top: 12%;
-        right: 12%;
+        top: 10%;
+        right: 10%;
         width: 80px;
         height: 80px;
         background: radial-gradient(circle, #ffe97a 0%, #ffcc00 55%, rgba(255,200,0,0) 100%);
@@ -61,8 +91,8 @@ function createSun() {
     const raysWrapper = document.createElement("div");
     raysWrapper.style.cssText = `
         position: absolute;
-        top: 12%;
-        right: 12%;
+        top: 10%;
+        right: 10%;
         width: 80px;
         height: 80px;
         animation: rotateSun 12s linear infinite;
@@ -107,7 +137,7 @@ function createClouds(count = 6) {
     }
 }
 
-function createRain(count = 120, isDrizzle = false) {
+function createRain(count = 180, isDrizzle = false) {
     for (let i = 0; i < count; i++) {
         const drop = document.createElement("div");
         drop.classList.add("drop");
@@ -120,7 +150,7 @@ function createRain(count = 120, isDrizzle = false) {
     }
 }
 
-function createSnow(count = 80) {
+function createSnow(count = 120) {
     const snowChars = ["❄", "❅", "❆"];
     for (let i = 0; i < count; i++) {
         const flake = document.createElement("div");
@@ -142,14 +172,13 @@ function createMist() {
 }
 
 function createThunderstorm() {
-    createRain(160, false);
+    createRain(220, false);
     const lightning = document.createElement("div");
     lightning.style.cssText = `
         position: absolute;
         inset: 0;
         background: rgba(255,255,255,0);
         animation: lightningFlash 4s infinite;
-        border-radius: inherit;
     `;
     el.animations.appendChild(lightning);
 }
@@ -184,23 +213,29 @@ function updateUI(data) {
     } else if (condition.includes("rain")) {
         // 🌧 Rain
         setIcon("rain");
-        createRain(130, false);
+        createRain(180, false);
 
     } else if (condition.includes("drizzle")) {
         // 🌦 Drizzle
         setIcon("drizzle");
-        createRain(80, true);
+        createRain(100, true);
 
     } else if (condition.includes("snow")) {
         // ❄ Snow
         setIcon("snow");
-        createSnow(70);
+        createSnow(120);
 
     } else if (condition.includes("mist") || condition.includes("fog") || condition.includes("haze")) {
         // 🌫 Mist / Fog
         setIcon("mist");
         createMist();
         createClouds(3);
+
+    } else if (temp < 0) {
+        // 🥶 Below freezing — show snow across the page even if the API
+        // just reports "Clear"/"Clouds" (treat sub-zero as snowy weather)
+        setIcon("snow");
+        createSnow(120);
 
     } else if (temp >= 26 && !isSevere) {
         // ☀️ Temp 26°C or above + no severe weather = SUNNY
