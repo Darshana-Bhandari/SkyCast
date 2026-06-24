@@ -48,15 +48,28 @@ body {
     position: relative;
     overflow: hidden;
 }
-
 .card::before {
-    content: '';
+    content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+    top: -100%;
+    left: -100%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.15),
+        transparent
+    );
+    transform: rotate(25deg);
+    animation: shine 8s linear infinite;
+}
+
+@keyframes shine {
+    100% {
+        left: 100%;
+        top: 100%;
+    }
 }
 
 .card::after {
@@ -71,6 +84,19 @@ body {
         rgba(88, 28, 180, 0.1) 100%
     );
     pointer-events: none;
+}
+
+.card {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%,100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 .search {
@@ -135,11 +161,24 @@ body {
 .weather img {
     width: 170px;
     margin-top: 30px;
+    animation: bounce 3s infinite ease-in-out;
+}
+
+@keyframes bounce {
+    0%,100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
 }
 
 .weather h1 {
-    font-size: 80px;
-    font-weight: 500;
+    font-size: 90px;
+    font-weight: 700;
+    text-shadow:
+        0 0 20px rgba(255,255,255,0.3),
+        0 0 40px rgba(255,255,255,0.2);
 }
 
 .weather h2 {
