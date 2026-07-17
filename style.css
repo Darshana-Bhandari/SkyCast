@@ -95,3 +95,38 @@ body::after{ background:var(--accent-2); bottom:-140px; right:-120px; }
 @keyframes sunPulse{
   0%,100%{ transform:scale(1); box-shadow:0 0 40px 20px rgba(255,220,50,0.55), 0 0 80px 40px rgba(255,200,0,0.25); }
   50%{ transform:scale(1.08); box-shadow:0 0 55px 28px rgba(255,220,50,0.70), 0 0 100px 55px rgba(255,200,0,0.35); }
+  .brand{ font-size:22px; font-weight:700; letter-spacing:.02em; display:flex; align-items:center; gap:8px; }
+.brand-mark{ font-size:20px; }
+.nav-links{ display:flex; gap:28px; }
+.nav-links a{
+  color:var(--text-dim); text-decoration:none; font-size:15px; font-weight:500;
+  padding-bottom:4px; border-bottom:2px solid transparent; transition:all .25s ease;
+}
+.nav-links a:hover, .nav-links a.active{ color:#fff; border-bottom-color:var(--accent-4); }
+.theme-toggle{
+  width:42px; height:42px; border-radius:50%; border:1px solid rgba(255,255,255,0.25);
+  background:rgba(255,255,255,0.08); backdrop-filter:blur(10px); cursor:pointer;
+  font-size:18px; display:flex; align-items:center; justify-content:center;
+  transition:all .3s ease;
+}
+.theme-toggle:hover{ transform:rotate(20deg) scale(1.08); background:rgba(255,255,255,0.16); }
+ 
+@media (max-width:640px){
+  .nav-links{ display:none; }
+}
+ 
+/* ============================================================
+   PAGE WRAP + CLOCK
+   ============================================================ */
+.page-wrap{ max-width:900px; margin:0 auto; padding:0 5vw 80px; position:relative; z-index:2; }
+ 
+.clock-widget{
+  text-align:right; margin-top:10px; font-family:'Outfit',sans-serif;
+}
+.clock-day{ font-size:14px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-dim); }
+.clock-time{ font-size:28px; font-weight:600; }
+.clock-date{ font-size:13px; color:var(--text-dim); }
+ 
+/* ============================================================
+   MAIN CARD
+   ==================
