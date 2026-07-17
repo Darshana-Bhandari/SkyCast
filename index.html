@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
- 
+
   <!-- Boot / loading screen -->
   <div class="boot" id="boot">
     <div class="boot-cloud">
@@ -22,10 +22,10 @@
     </div>
     <p>Finding your sky…</p>
   </div>
- 
+
   <!-- Ambient full-page layer -->
   <div class="weather-animations" id="animations"></div>
- 
+
   <!-- Navbar -->
   <nav class="navbar">
     <div class="brand">
@@ -40,18 +40,18 @@
       <span id="themeIcon">🌙</span>
     </button>
   </nav>
- 
+
   <div class="page-wrap">
- 
+
     <!-- Top clock/date -->
     <div class="clock-widget">
       <div class="clock-day" id="clockDay">—</div>
       <div class="clock-time" id="clockTime">--:--</div>
       <div class="clock-date" id="clockDate">—</div>
     </div>
- 
+
     <div class="card" id="mainCard">
- 
+
       <div class="search">
         <div class="search-inputwrap">
           <input type="text" id="cityInput" placeholder="Search a city…" spellcheck="false" autocomplete="off">
@@ -61,12 +61,12 @@
           <span id="searchBtnIcon">🔍</span>
         </button>
       </div>
- 
+
       <div class="recent" id="recentWrap">
         <span class="recent-label">Recent:</span>
         <div class="recent-chips" id="recentChips"></div>
       </div>
- 
+
       <!-- Error state -->
       <div class="error-panel" id="errorPanel">
         <div class="error-emoji">❌</div>
@@ -74,7 +74,7 @@
         <p>We couldn't find that place. Check the spelling and try again.</p>
         <button id="errorRetry">Try again</button>
       </div>
- 
+
       <!-- Weather content -->
       <div class="weather" id="weatherContent">
         <div class="icon-stage" id="iconStage"></div>
@@ -83,32 +83,37 @@
         <h2 class="condition" id="condition">—</h2>
         <p class="feels-like" id="feelsLike">Feels like --°</p>
         <h3 class="city" id="city">—</h3>
- 
+
         <div class="details-grid" id="detailsGrid"></div>
- 
+
         <div class="aqi-card" id="aqiCard">
           <div class="aqi-label">Air Quality</div>
           <div class="aqi-value" id="aqiValue">—</div>
           <div class="aqi-status" id="aqiStatus">—</div>
         </div>
       </div>
- 
+
     </div>
- 
+
     <!-- Hourly forecast -->
     <section class="panel" id="hourlyPanel">
       <h3 class="panel-title">Hourly forecast</h3>
       <div class="hourly-scroll" id="hourlyScroll"></div>
     </section>
- 
+
     <!-- Daily forecast -->
     <section class="panel" id="forecast-section">
       <h3 class="panel-title">5-day forecast</h3>
       <div class="daily-list" id="dailyList"></div>
     </section>
-  <section class="panel about" id="about-section">
+
+    <section class="panel about" id="about-section">
       <h3 class="panel-title">About SkyCast</h3>
       <p>SkyCast reads live conditions from OpenWeather and turns them into an ambient scene — sun, rain, snow, or storm — right on the page. Search any city, glance at the sky it's under, and plan around it.</p>
     </section>
- 
+
   </div>
+
+  <script src="javascript.js"></script>
+</body>
+</html>
