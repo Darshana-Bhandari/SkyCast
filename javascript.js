@@ -1,303 +1,107 @@
+/* ============================================================
+   SKYCAST — app logic
+   ============================================================ */
+ 
 const CONFIG = {
-    apiKey: "01224752f6d7948fe5d5c12b31fee4e4",
-    apiUrl: "https://api.openweathermap.org/data/2.5/weather"
+  apiKey: "01224752f6d7948fe5d5c12b31fee4e4",
+  weatherUrl: "https://api.openweathermap.org/data/2.5/weather",
+  forecastUrl: "https://api.openweathermap.org/data/2.5/forecast",
+  airUrl: "https://api.openweathermap.org/data/2.5/air_pollution",
+  geoUrl: "https://api.openweathermap.org/geo/1.0/direct",
+  oneCallUrl: "https://api.openweathermap.org/data/3.0/onecall"
 };
-
-// DOM Elements
+ 
 const el = {
-    input: document.querySelector(".search input"),
-    btn: document.querySelector(".search button"),
-    city: document.querySelector(".city"),
-    temp: document.querySelector(".temp"),
-    humidity: document.querySelector(".humidity"),
-    wind: document.querySelector(".wind"),
-    icon: document.querySelector(".weather img"),
-    animations: document.querySelector(".weather-animations")
+  boot: document.getElementById("boot"),
+  animations: document.getElementById("animations"),
+  themeToggle: document.getElementById("themeToggle"),
+  themeIcon: document.getElementById("themeIcon"),
+  clockDay: document.getElementById("clockDay"),
+  clockTime: document.getElementById("clockTime"),
+  clockDate: document.getElementById("clockDate"),
+  card: document.getElementById("mainCard"),
+  input: document.getElementById("cityInput"),
+  suggestions: document.getElementById("suggestions"),
+  searchBtn: document.getElementById("searchBtn"),
+  searchBtnIcon: document.getElementById("searchBtnIcon"),
+  recentWrap: document.getElementById("recentWrap"),
+  recentChips: document.getElementById("recentChips"),
+  errorPanel: document.getElementById("errorPanel"),
+  errorRetry: document.getElementById("errorRetry"),
+  weatherContent: document.getElementById("weatherContent"),
+  iconStage: document.getElementById("iconStage"),
+  temp: document.getElementById("temp"),
+  condition: document.getElementById("condition"),
+  feelsLike: document.getElementById("feelsLike"),
+  city: document.getElementById("city"),
+  detailsGrid: document.getElementById("detailsGrid"),
+  aqiValue: document.getElementById("aqiValue"),
+  aqiStatus: document.getElementById("aqiStatus"),
+  hourlyScroll: document.getElementById("hourlyScroll"),
+  dailyList: document.getElementById("dailyList")
 };
-
-// ── Move the animation layer out of the card ───────────────────────────────
-// This is the key fix: the card clips/crops the animations because it has
-// overflow:hidden + rounded corners + a fixed small width. By re-parenting
-// the layer to <body> (position: fixed, full viewport — see CSS), the sun,
-// rain, and snow can render across the whole page instead of being squeezed
-// and cut off inside the card.
-if (el.animations && el.animations.parentElement !== document.body) {
-    document.body.appendChild(el.animations);
+ 
+let lastQuery = null; // {lat,lon} or {city}
+ 
+/* ---------------------------------------------------------------
+   BOOT
+--------------------------------------------------------------- */
+function hideBoot(){ el.boot.classList.add("hidden"); }
+ 
+/* ---------------------------------------------------------------
+   CLOCK — updates every second
+--------------------------------------------------------------- */
+function tickClock(){
+  const now = new Date();
+  const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  el.clockDay.textContent = days[now.getDay()];
+  let h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12; if (h === 0) h = 12;
+  el.clockTime.textContent = `${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")} ${ampm}`;
+  el.clockDate.textContent = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 }
-
-// ── Icon Map (overrides OpenWeather icon with correct one) ────────────────────
-// Uses OpenWeather's own icons but picks the RIGHT one based on our logic
-const ICON_MAP = {
-    sunny:       "https://openweathermap.org/img/wn/01d@2x.png",  // clear sky sun
-    partlyCloudy:"https://openweathermap.org/img/wn/02d@2x.png",  // few clouds
-    cloudy:      "https://openweathermap.org/img/wn/04d@2x.png",  // broken clouds
-    rain:        "https://openweathermap.org/img/wn/10d@2x.png",  // rain
-    drizzle:     "https://openweathermap.org/img/wn/09d@2x.png",  // drizzle
-    thunderstorm:"https://openweathermap.org/img/wn/11d@2x.png",  // thunderstorm
-    snow:        "https://openweathermap.org/img/wn/13d@2x.png",  // snow
-    mist:        "https://openweathermap.org/img/wn/50d@2x.png",  // mist/fog
-};
-
-// Maps an icon "type" to one of the body background classes already
-// defined in your CSS (body.sunny / .cloudy / .rainy / .snowy).
-const BODY_CLASS_MAP = {
-    sunny:        "sunny",
-    partlyCloudy: "sunny",
-    cloudy:       "cloudy",
-    mist:         "cloudy",
-    rain:         "rainy",
-    drizzle:      "rainy",
-    thunderstorm: "rainy",
-    snow:         "snowy"
-};
-
-// ── helpers ───────────────────────────────────────────────────────────────────
-
-function clearAnimations() {
-    if (el.animations) el.animations.innerHTML = "";
+setInterval(tickClock, 1000);
+tickClock();
+ 
+/* Auto theme accent-tint by time of day (blended with weather theme) */
+function timeOfDayPhase(){
+  const h = new Date().getHours();
+  if (h >= 5 && h < 11) return "morning";
+  if (h >= 11 && h < 17) return "afternoon";
+  if (h >= 17 && h < 20) return "evening";
+  return "night";
 }
-
-function setBodyClass(type) {
-    document.body.classList.remove("sunny", "cloudy", "rainy", "snowy");
-    const cls = BODY_CLASS_MAP[type];
-    if (cls) document.body.classList.add(cls);
+ 
+/* ---------------------------------------------------------------
+   DARK MODE
+--------------------------------------------------------------- */
+function applyDarkPref(){
+  const saved = localStorage.getItem("skycast-dark");
+  if (saved === "1"){ document.body.classList.add("dark"); el.themeIcon.textContent = "🌞"; }
 }
-
-function setIcon(type) {
-    if (el.icon && ICON_MAP[type]) {
-        el.icon.src = ICON_MAP[type];
-    }
-    setBodyClass(type);
-}
-
-// ── animation builders ────────────────────────────────────────────────────────
-
-function createSun() {
-    const sun = document.createElement("div");
-    sun.style.cssText = `
-        position: absolute;
-        top: 10%;
-        right: 10%;
-        width: 80px;
-        height: 80px;
-        background: radial-gradient(circle, #ffe97a 0%, #ffcc00 55%, rgba(255,200,0,0) 100%);
-        border-radius: 50%;
-        box-shadow: 0 0 40px 20px rgba(255, 220, 50, 0.55),
-                    0 0 80px 40px rgba(255, 200, 0, 0.25);
-        animation: sunPulse 3s ease-in-out infinite;
-        z-index: 1;
-    `;
-
-    const raysWrapper = document.createElement("div");
-    raysWrapper.style.cssText = `
-        position: absolute;
-        top: 10%;
-        right: 10%;
-        width: 80px;
-        height: 80px;
-        animation: rotateSun 12s linear infinite;
-        z-index: 1;
-    `;
-
-    for (let i = 0; i < 8; i++) {
-        const ray = document.createElement("div");
-        const angle = (360 / 8) * i;
-        ray.style.cssText = `
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 4px;
-            height: 28px;
-            margin-left: -2px;
-            background: linear-gradient(to top, rgba(255,220,50,0.9), transparent);
-            border-radius: 2px;
-            transform-origin: 50% 0%;
-            transform: rotate(${angle}deg) translateY(-56px);
-        `;
-        raysWrapper.appendChild(ray);
-    }
-
-    el.animations.appendChild(sun);
-    el.animations.appendChild(raysWrapper);
-}
-
-function createClouds(count = 6) {
-    for (let i = 0; i < count; i++) {
-        const cloud = document.createElement("div");
-        cloud.classList.add("cloud");
-        const size = 70 + Math.random() * 130;
-        cloud.style.width             = size + "px";
-        cloud.style.height            = (size * 0.6) + "px";
-        cloud.style.top               = (10 + Math.random() * 50) + "%";
-        cloud.style.left              = Math.random() * 100 + "%";
-        cloud.style.animationDuration = (25 + Math.random() * 35) + "s";
-        cloud.style.animationDelay    = "-" + (Math.random() * 40) + "s";
-        cloud.style.opacity           = 0.5 + Math.random() * 0.35;
-        el.animations.appendChild(cloud);
-    }
-}
-
-function createRain(count = 180, isDrizzle = false) {
-    for (let i = 0; i < count; i++) {
-        const drop = document.createElement("div");
-        drop.classList.add("drop");
-        drop.style.left              = Math.random() * 100 + "%";
-        drop.style.height            = (isDrizzle ? 25 : 50) + Math.random() * 40 + "px";
-        drop.style.animationDuration = (isDrizzle ? 0.6 : 0.4) + Math.random() * 0.6 + "s";
-        drop.style.animationDelay    = Math.random() * 2 + "s";
-        drop.style.opacity           = isDrizzle ? 0.5 : 0.8;
-        el.animations.appendChild(drop);
-    }
-}
-
-function createSnow(count = 120) {
-    const snowChars = ["❄", "❅", "❆"];
-    for (let i = 0; i < count; i++) {
-        const flake = document.createElement("div");
-        flake.classList.add("snowflake");
-        flake.textContent             = snowChars[Math.floor(Math.random() * snowChars.length)];
-        flake.style.left              = Math.random() * 100 + "%";
-        flake.style.fontSize          = (12 + Math.random() * 18) + "px";
-        flake.style.animationDuration = (6 + Math.random() * 8) + "s";
-        flake.style.animationDelay    = Math.random() * 6 + "s";
-        flake.style.opacity           = 0.7 + Math.random() * 0.3;
-        el.animations.appendChild(flake);
-    }
-}
-
-function createMist() {
-    const mistLayer = document.createElement("div");
-    mistLayer.classList.add("mist");
-    el.animations.appendChild(mistLayer);
-}
-
-function createThunderstorm() {
-    createRain(220, false);
-    const lightning = document.createElement("div");
-    lightning.style.cssText = `
-        position: absolute;
-        inset: 0;
-        background: rgba(255,255,255,0);
-        animation: lightningFlash 4s infinite;
-    `;
-    el.animations.appendChild(lightning);
-}
-
-// ── main update ───────────────────────────────────────────────────────────────
-
-function updateUI(data) {
-    el.city.textContent     = data.name;
-    el.temp.textContent     = `${Math.round(data.main.temp)}°C`;
-    el.humidity.textContent = `${data.main.humidity}%`;
-    el.wind.textContent     = `${data.wind.speed} km/h`;
-
-    clearAnimations();
-
-    const temp      = data.main.temp;
-    const condition = data.weather[0].main.toLowerCase();
-
-    // Severe weather — always takes priority no matter the temperature
-    const isSevere = condition.includes("thunderstorm") ||
-                     condition.includes("rain")         ||
-                     condition.includes("drizzle")      ||
-                     condition.includes("snow")         ||
-                     condition.includes("mist")         ||
-                     condition.includes("fog")          ||
-                     condition.includes("haze");
-
-    if (condition.includes("thunderstorm")) {
-        // ⛈ Thunderstorm
-        setIcon("thunderstorm");
-        createThunderstorm();
-
-    } else if (condition.includes("rain")) {
-        // 🌧 Rain
-        setIcon("rain");
-        createRain(180, false);
-
-    } else if (condition.includes("drizzle")) {
-        // 🌦 Drizzle
-        setIcon("drizzle");
-        createRain(100, true);
-
-    } else if (condition.includes("snow")) {
-        // ❄ Snow
-        setIcon("snow");
-        createSnow(120);
-
-    } else if (condition.includes("mist") || condition.includes("fog") || condition.includes("haze")) {
-        // 🌫 Mist / Fog
-        setIcon("mist");
-        createMist();
-        createClouds(3);
-
-    } else if (temp < 0) {
-        // 🥶 Below freezing — show snow across the page even if the API
-        // just reports "Clear"/"Clouds" (treat sub-zero as snowy weather)
-        setIcon("snow");
-        createSnow(120);
-
-    } else if (temp >= 26 && !isSevere) {
-        // ☀️ Temp 26°C or above + no severe weather = SUNNY
-        // Show sun icon + sun animation regardless of cloud condition from API
-        if (condition.includes("cloud")) {
-            setIcon("partlyCloudy");  // few clouds icon but still show sun animation
-            createSun();
-            createClouds(2);          // 2 light clouds behind sun
-        } else {
-            setIcon("sunny");         // pure clear sun icon
-            createSun();
-        }
-
-    } else if (condition.includes("cloud")) {
-        // ☁️ Cloudy (and temp below 26)
-        setIcon("cloudy");
-        createClouds(7);
-
-    } else if (condition.includes("clear")) {
-        // 🌤 Clear but below 26°C (cool clear day)
-        setIcon("sunny");
-        createSun();
-
-    } else {
-        // Default fallback
-        setIcon("partlyCloudy");
-        createClouds(4);
-    }
-}
-
-// ── search ────────────────────────────────────────────────────────────────────
-
-async function performCitySearch() {
-    const query = el.input.value.trim();
-    if (!query) return;
-    try {
-        const res = await fetch(
-            `${CONFIG.apiUrl}?q=${encodeURIComponent(query)}&units=metric&appid=${CONFIG.apiKey}`
-        );
-        if (!res.ok) throw new Error("City not found");
-        updateUI(await res.json());
-    } catch (error) {
-        alert("Error: " + error.message);
-    }
-}
-
-// ── event listeners ───────────────────────────────────────────────────────────
-
-el.btn.addEventListener("click", performCitySearch);
-el.input.addEventListener("keypress", e => {
-    if (e.key === "Enter") performCitySearch();
+applyDarkPref();
+el.themeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  const isDark = document.body.classList.contains("dark");
+  localStorage.setItem("skycast-dark", isDark ? "1" : "0");
+  el.themeIcon.textContent = isDark ? "🌞" : "🌙";
 });
-
-window.addEventListener("load", () => {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async pos => {
-            try {
-                const res = await fetch(
-                    `${CONFIG.apiUrl}?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&units=metric&appid=${CONFIG.apiKey}`
-                );
-                updateUI(await res.json());
-            } catch (e) {}
-        });
-    }
-});
+ 
+/* ---------------------------------------------------------------
+   CARD 3D TILT (desktop only)
+--------------------------------------------------------------- */
+if (window.matchMedia("(hover:hover) and (pointer:fine)").matches){
+  el.card.addEventListener("mousemove", e => {
+    const r = el.card.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    el.card.style.setProperty("--tiltY", `${px * 8}deg`);
+    el.card.style.setProperty("--tiltX", `${-py * 8}deg`);
+  });
+  el.card.addEventListener("mouseleave", () => {
+    el.card.style.setProperty("--tiltY", `0deg`);
+    el.card.style.setProperty("--tiltX", `0deg`);
+  });
+}
