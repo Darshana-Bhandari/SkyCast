@@ -1,9 +1,3 @@
-/* ============================================================
-   SKYCAST — tokens
-   Type: Outfit (display/numbers) + Plus Jakarta Sans (body/UI)
-   Palette shifts per weather + light/dark, defined as CSS vars
-   on <body>, updated live by javascript.js
-   ============================================================ */
 
 :root{
   --accent-1:#38bdf8;
