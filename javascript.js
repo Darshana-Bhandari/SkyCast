@@ -127,3 +127,52 @@ function renderRecents(){
   el.recentWrap.style.display = "flex";
   list.forEach(name => {
     const chip = document.createElement("span");
+    /* ---------------------------------------------------------------
+   GEOCODE SEARCH SUGGESTIONS (debounced)
+--------------------------------------------------------------- */
+let suggestTimer = null;
+el.input.addEventListener("input", () => {
+  clearTimeout(suggestTimer);
+  const q = el.input.value.trim();
+  if (q.length < 2){ el.suggestions.classList.remove("show"); return; }
+  suggestTimer = setTimeout(() => fetchSuggestions(q), 300);
+});
+document.addEventListener("click", (e) => {
+  if (!el.suggestions.contains(e.target) && e.target !== el.input){
+    el.suggestions.classList.remove("show");
+  }
+});
+ 
+async function fetchSuggestions(q){
+  try{
+    const res = await fetch(`${CONFIG.geoUrl}?q=${encodeURIComponent(q)}&limit=5&appid=${CONFIG.apiKey}`);
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length){ el.suggestions.classList.remove("show"); return; }
+    el.suggestions.innerHTML = "";
+    data.forEach(place => {
+      const item = document.createElement("div");
+      item.className = "suggestion-item";
+      const region = [place.state, place.country].filter(Boolean).join(", ");
+      item.innerHTML = `${place.name} <small>— ${region}</small>`;
+      item.addEventListener("click", () => {
+        el.input.value = place.name;
+        el.suggestions.classList.remove("show");
+        fetchByCoords(place.lat, place.lon, place.name);
+      });
+      el.suggestions.appendChild(item);
+    });
+    el.suggestions.classList.add("show");
+  } catch { el.suggestions.classList.remove("show"); }
+}
+ 
+/* ---------------------------------------------------------------
+   SEARCH ACTIONS
+--------------------------------------------------------------- */
+function setSearchLoading(isLoading){
+  el.searchBtn.classList.toggle("loading", isLoading);
+  el.searchBtnIcon.textContent = isLoading ? "⏳" : "🔍";
+}
+function flashSearchSuccess(){
+  el.searchBtnIcon.textContent = "✓";
+  setTimeout(() => { el.searchBtnIcon.textContent = "🔍"; }, 1200);
+}
