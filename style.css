@@ -130,3 +130,56 @@ body::after{ background:var(--accent-2); bottom:-140px; right:-120px; }
 /* ============================================================
    MAIN CARD
    ==================
+
+   .card{
+  width:100%; max-width:470px; min-height:380px;
+  margin:24px auto 0;
+  position:relative; z-index:2;
+  padding:2px;
+  border-radius:36px;
+  background:linear-gradient(120deg,#00d4ff,#7c3aed,#38bdf8,#00d4ff);
+  background-size:300% 300%;
+  animation:borderFlow 8s linear infinite;
+  transition:box-shadow .6s ease, transform .15s ease;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.45),
+    0 32px 64px rgba(0,0,0,0.35),
+    0 0 70px 6px var(--glow-color);
+  cursor:default;
+}
+@keyframes borderFlow{
+  0%{ background-position:0% 50%; }
+  100%{ background-position:100% 50%; }
+}
+.card > *{ position:relative; }
+.card::before{
+  content:""; position:absolute; inset:0; border-radius:34px; z-index:0;
+  background:linear-gradient(135deg, var(--card-tint-1) 0%, var(--card-tint-2) 50%, var(--card-tint-3) 100%);
+  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,0.18);
+}
+.card-inner-pad{ position:relative; z-index:1; }
+.card{ animation-name:borderFlow, float; animation-duration:8s, 6s; animation-timing-function:linear, ease-in-out; animation-iteration-count:infinite, infinite; }
+@keyframes float{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-8px);} }
+ 
+.card > .search,
+.card > .recent,
+.card > .error-panel,
+.card > .weather{
+  position:relative; z-index:1; padding-left:33px; padding-right:33px;
+}
+.card > .search{ padding-top:34px; }
+.card > .weather{ padding-bottom:34px; }
+ 
+/* subtle 3D tilt handled via JS setting transform + these vars */
+.card{ transform: perspective(1000px) rotateX(var(--tiltX,0deg)) rotateY(var(--tiltY,0deg)) translateY(var(--floatY,0)); }
+ 
+/* ============================================================
+   SEARCH
+   ============================================================ */
+.search{ display:flex; align-items:center; gap:14px; }
+.search-inputwrap{ position:relative; flex:1; }
+.search input{
+  width:100%; height:56px; border-radius:28px; padding:10px 22px; border:none; outline:none;
+  background:rgba(255,255,255,0.14); color:#fff; font-size:16px; font-family:'Plus Jakarta Sans',sans-serif;
+  transition:all .3s ease;
