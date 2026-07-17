@@ -1,3 +1,10 @@
+/* ============================================================
+   SKYCAST — tokens
+   Type: Outfit (display/numbers) + Plus Jakarta Sans (body/UI)
+   Palette shifts per weather + light/dark, defined as CSS vars
+   on <body>, updated live by javascript.js
+   ============================================================ */
+
 :root{
   --accent-1:#38bdf8;
   --accent-2:#7c3aed;
@@ -14,11 +21,11 @@
   --bg-c:#2563eb;
   --bg-d:#38bdf8;
 }
- 
+
 *{ margin:0; padding:0; box-sizing:border-box; }
- 
+
 html{ scroll-behavior:smooth; }
- 
+
 body{
   font-family:'Plus Jakarta Sans', sans-serif;
   min-height:100vh;
@@ -29,12 +36,12 @@ body{
   animation: bgMove 18s ease infinite alternate;
   transition: color 0.6s ease;
 }
- 
+
 @keyframes bgMove{
   0%{ background-position:0% 50%; }
   100%{ background-position:100% 50%; }
 }
- 
+
 body::before,
 body::after{
   content:"";
@@ -50,7 +57,7 @@ body::after{
 }
 body::before{ background:var(--accent-4); top:-140px; left:-100px; }
 body::after{ background:var(--accent-2); bottom:-140px; right:-120px; }
- 
+
 /* ============================================================
    BOOT SCREEN
    ============================================================ */
@@ -65,7 +72,7 @@ body::after{ background:var(--accent-2); bottom:-140px; right:-120px; }
 .boot-cloud{ animation:floatCloud 2.4s ease-in-out infinite; }
 @keyframes floatCloud{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-10px);} }
 .boot p{ font-family:'Outfit',sans-serif; font-weight:500; letter-spacing:.03em; color:rgba(255,255,255,0.85); }
- 
+
 /* ============================================================
    AMBIENT WEATHER LAYER (behind everything)
    ============================================================ */
@@ -75,27 +82,46 @@ body::after{ background:var(--accent-2); bottom:-140px; right:-120px; }
 }
 .cloud{ position:absolute; background:rgba(255,255,255,0.9); border-radius:50%; filter:blur(8px); animation:moveClouds linear infinite; }
 @keyframes moveClouds{ from{ transform:translateX(-200%);} to{ transform:translateX(350%);} }
- 
+
 .drop{ position:absolute; width:2px; background:linear-gradient(transparent, rgba(255,255,255,0.95)); animation:fall linear infinite; }
 @keyframes fall{ to{ transform:translateY(110vh);} }
- 
+
 .snowflake{ position:absolute; color:#fff; font-size:18px; animation:snowfall linear infinite; text-shadow:0 0 5px #fff; }
 @keyframes snowfall{ to{ transform:translateY(110vh) rotate(360deg);} }
- 
+
 .mist{ position:absolute; inset:0; background:rgba(255,255,255,0.22); animation:mistMove 25s linear infinite; opacity:.6; }
 @keyframes mistMove{ 0%{ transform:translateX(-30%);} 100%{ transform:translateX(30%);} }
- 
+
 .star{ position:absolute; background:#fff; border-radius:50%; animation:twinkle ease-in-out infinite; }
 @keyframes twinkle{ 0%,100%{ opacity:.25; } 50%{ opacity:1; } }
- 
+
 .moon{ position:absolute; top:8%; right:10%; width:70px; height:70px; border-radius:50%;
   background:radial-gradient(circle at 35% 35%, #fdfdfd, #d7dee6 60%, #b9c2cc);
   box-shadow:0 0 40px 14px rgba(255,255,255,0.35); }
- 
+
 @keyframes sunPulse{
   0%,100%{ transform:scale(1); box-shadow:0 0 40px 20px rgba(255,220,50,0.55), 0 0 80px 40px rgba(255,200,0,0.25); }
   50%{ transform:scale(1.08); box-shadow:0 0 55px 28px rgba(255,220,50,0.70), 0 0 100px 55px rgba(255,200,0,0.35); }
-  .brand{ font-size:22px; font-weight:700; letter-spacing:.02em; display:flex; align-items:center; gap:8px; }
+}
+@keyframes rotateSun{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+.lightning-flash{ position:absolute; inset:0; animation:lightningFlash 4s infinite; }
+@keyframes lightningFlash{
+  0%,90%,100%{ background:rgba(255,255,255,0); }
+  92%{ background:rgba(255,255,255,0.35); }
+  94%{ background:rgba(255,255,255,0); }
+  96%{ background:rgba(255,255,255,0.2); }
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.navbar{
+  position:relative; z-index:5;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:22px 5vw 0;
+  font-family:'Outfit',sans-serif;
+}
+.brand{ font-size:22px; font-weight:700; letter-spacing:.02em; display:flex; align-items:center; gap:8px; }
 .brand-mark{ font-size:20px; }
 .nav-links{ display:flex; gap:28px; }
 .nav-links a{
@@ -110,28 +136,27 @@ body::after{ background:var(--accent-2); bottom:-140px; right:-120px; }
   transition:all .3s ease;
 }
 .theme-toggle:hover{ transform:rotate(20deg) scale(1.08); background:rgba(255,255,255,0.16); }
- 
+
 @media (max-width:640px){
   .nav-links{ display:none; }
 }
- 
+
 /* ============================================================
    PAGE WRAP + CLOCK
    ============================================================ */
 .page-wrap{ max-width:900px; margin:0 auto; padding:0 5vw 80px; position:relative; z-index:2; }
- 
+
 .clock-widget{
   text-align:right; margin-top:10px; font-family:'Outfit',sans-serif;
 }
 .clock-day{ font-size:14px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-dim); }
 .clock-time{ font-size:28px; font-weight:600; }
 .clock-date{ font-size:13px; color:var(--text-dim); }
- 
+
 /* ============================================================
    MAIN CARD
-   ==================
-
-   .card{
+   ============================================================ */
+.card{
   width:100%; max-width:470px; min-height:380px;
   margin:24px auto 0;
   position:relative; z-index:2;
@@ -161,7 +186,7 @@ body::after{ background:var(--accent-2); bottom:-140px; right:-120px; }
 .card-inner-pad{ position:relative; z-index:1; }
 .card{ animation-name:borderFlow, float; animation-duration:8s, 6s; animation-timing-function:linear, ease-in-out; animation-iteration-count:infinite, infinite; }
 @keyframes float{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-8px);} }
- 
+
 .card > .search,
 .card > .recent,
 .card > .error-panel,
@@ -170,10 +195,10 @@ body::after{ background:var(--accent-2); bottom:-140px; right:-120px; }
 }
 .card > .search{ padding-top:34px; }
 .card > .weather{ padding-bottom:34px; }
- 
+
 /* subtle 3D tilt handled via JS setting transform + these vars */
 .card{ transform: perspective(1000px) rotateX(var(--tiltX,0deg)) rotateY(var(--tiltY,0deg)) translateY(var(--floatY,0)); }
- 
+
 /* ============================================================
    SEARCH
    ============================================================ */
@@ -183,13 +208,61 @@ body::after{ background:var(--accent-2); bottom:-140px; right:-120px; }
   width:100%; height:56px; border-radius:28px; padding:10px 22px; border:none; outline:none;
   background:rgba(255,255,255,0.14); color:#fff; font-size:16px; font-family:'Plus Jakarta Sans',sans-serif;
   transition:all .3s ease;
-  
-  
-r;
+}
+.search input::placeholder{ color:rgba(255,255,255,0.6); }
+.search input:focus{ background:rgba(255,255,255,0.24); box-shadow:0 0 0 3px rgba(56,189,248,0.35); }
+
+.suggestions{
+  position:absolute; top:64px; left:0; right:0;
+  background:rgba(20,25,45,0.92); backdrop-filter:blur(14px);
+  border-radius:16px; overflow:hidden; z-index:20;
+  box-shadow:0 12px 30px rgba(0,0,0,0.4);
+  display:none;
+}
+.suggestions.show{ display:block; }
+.suggestion-item{
+  padding:12px 18px; font-size:14px; cursor:pointer; text-align:left; color:#fff;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.suggestion-item:last-child{ border-bottom:none; }
+.suggestion-item:hover{ background:rgba(255,255,255,0.1); }
+.suggestion-item small{ color:var(--text-dim); }
+
+.search button{
+  height:56px; width:56px; border-radius:50%; border:none; outline:none;
+  background:rgba(255,255,255,0.14); cursor:pointer; flex-shrink:0; font-size:18px;
+  transition:all .3s ease; display:flex; align-items:center; justify-content:center;
+}
+.search button:hover{ background:rgba(255,255,255,0.24); transform:scale(1.06); }
+.search button.loading #searchBtnIcon{ animation:spin 0.8s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* ============================================================
+   RECENT SEARCHES
+   ============================================================ */
+.recent{ display:flex; align-items:center; gap:10px; margin-top:14px; flex-wrap:wrap; }
+.recent-label{ font-size:12px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.08em; }
+.recent-chips{ display:flex; gap:8px; flex-wrap:wrap; }
+.recent-chips span{
+  padding:6px 14px; background:rgba(255,255,255,0.12); border-radius:20px; font-size:13px; cursor:pointer;
+  transition:all .25s ease;
+}
+.recent-chips span:hover{ background:rgba(255,255,255,0.24); }
+
+/* ============================================================
+   ERROR PANEL
+   ============================================================ */
+.error-panel{ display:none; text-align:center; padding:50px 0 20px; }
+.error-panel.show{ display:block; }
+.error-emoji{ font-size:48px; }
+.error-panel h3{ font-family:'Outfit',sans-serif; margin-top:10px; font-size:22px; }
+.error-panel p{ color:var(--text-dim); margin-top:6px; font-size:14px; }
+.error-panel button{
+  margin-top:18px; padding:10px 26px; border-radius:20px; border:none; cursor:pointer;
   background:#fff; color:#0f172a; font-weight:600; transition:transform .2s ease;
 }
 .error-panel button:hover{ transform:scale(1.05); }
- 
+
 /* ============================================================
    WEATHER CONTENT
    ============================================================ */
@@ -197,3 +270,94 @@ r;
 .weather.hide{ display:none; }
 .icon-stage{ width:130px; height:130px; margin:18px auto 0; position:relative; animation:bounce 3s infinite ease-in-out; }
 @keyframes bounce{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-8px);} }
+
+.temp{
+  font-family:'Outfit',sans-serif; font-size:76px; font-weight:700; line-height:1;
+  text-shadow:0 0 20px rgba(255,255,255,0.3), 0 0 40px rgba(255,255,255,0.15);
+  margin-top:6px;
+}
+.condition{ font-family:'Outfit',sans-serif; font-size:26px; font-weight:500; margin-top:2px; }
+.feels-like{ color:var(--text-dim); font-size:14px; margin-top:4px; }
+.city{ font-family:'Outfit',sans-serif; font-size:20px; font-weight:600; margin-top:10px; letter-spacing:.02em; }
+
+/* ============================================================
+   DETAILS GRID (mini glass cards)
+   ============================================================ */
+.details-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:26px; text-align:left;
+}
+.detail-tile{
+  background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.1);
+  border-radius:18px; padding:14px 16px; display:flex; align-items:center; gap:12px;
+  transition:transform .2s ease, background .2s ease;
+}
+.detail-tile:hover{ background:rgba(255,255,255,0.16); transform:translateY(-2px); }
+.detail-icon{ font-size:22px; }
+.detail-label{ font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--text-dim); }
+.detail-value{ font-size:17px; font-weight:600; font-family:'Outfit',sans-serif; }
+
+.aqi-card{
+  margin-top:14px; background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.1);
+  border-radius:18px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between;
+}
+.aqi-label{ font-size:13px; color:var(--text-dim); }
+.aqi-value{ font-family:'Outfit',sans-serif; font-size:22px; font-weight:700; }
+.aqi-status{ font-size:13px; font-weight:600; padding:4px 12px; border-radius:12px; background:rgba(255,255,255,0.15); }
+
+/* ============================================================
+   PANELS (hourly / daily / about)
+   ============================================================ */
+.panel{ margin-top:36px; }
+.panel-title{ font-family:'Outfit',sans-serif; font-size:18px; font-weight:600; margin-bottom:14px; }
+
+.hourly-scroll{
+  display:flex; gap:14px; overflow-x:auto; padding-bottom:10px;
+  scrollbar-width:thin;
+}
+.hourly-scroll::-webkit-scrollbar{ height:6px; }
+.hourly-scroll::-webkit-scrollbar-thumb{ background:rgba(255,255,255,0.25); border-radius:4px; }
+.hour-tile{
+  flex:0 0 auto; width:78px; padding:16px 10px; text-align:center; border-radius:18px;
+  background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.1);
+}
+.hour-tile .h-time{ font-size:12px; color:var(--text-dim); }
+.hour-tile .h-icon{ font-size:26px; margin:8px 0; }
+.hour-tile .h-temp{ font-family:'Outfit',sans-serif; font-weight:600; }
+
+.daily-list{ display:flex; flex-direction:column; gap:8px; }
+.day-row{
+  display:flex; align-items:center; justify-content:space-between; padding:14px 18px;
+  background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.1); border-radius:16px;
+}
+.day-name{ width:80px; font-weight:600; font-family:'Outfit',sans-serif; }
+.day-icon{ font-size:22px; width:40px; text-align:center; }
+.day-temps{ display:flex; gap:10px; font-family:'Outfit',sans-serif; }
+.day-temps .lo{ color:var(--text-dim); }
+
+.about p{ color:var(--text-dim); line-height:1.7; max-width:60ch; }
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+body.dark{
+  --bg-a:#05070d; --bg-b:#0b1220; --bg-c:#111827; --bg-d:#1f2937;
+}
+body.dark .detail-tile,
+body.dark .aqi-card,
+body.dark .hour-tile,
+body.dark .day-row{ background:rgba(255,255,255,0.05); }
+body.dark .search input{ background:rgba(255,255,255,0.08); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:520px){
+  .card{ max-width:94vw; border-radius:30px; }
+  .card::before{ border-radius:28px; }
+  .temp{ font-size:58px; }
+  .condition{ font-size:20px; }
+  .icon-stage{ width:100px; height:100px; }
+  .details-grid{ grid-template-columns:1fr 1fr; gap:10px; }
+  .navbar{ padding:16px 5vw 0; }
+  .clock-time{ font-size:22px; }
+}
