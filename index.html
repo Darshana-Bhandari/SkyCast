@@ -1,47 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darsu Weather App</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkyCast — Weather</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="card">
-        <div class="search">
-            <input type="text" placeholder="Enter city name" spellcheck="false">
-            <button>
-                <img src="data:image/png;base64,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" alt="search">
-            </button>
-        </div>
-
-        <div class="weather">
-            <img src="rain.png" class="weather-icon" alt="weather icon">
-            <div class="temp">25°C</div>
-            <h2 class="city">New York</h2>
-
-            <div class="details">
-                <div class="col">
-                    <img src="humidity.png" alt="humidity">
-                    <div>
-                        <p class="humidity">50%</p>
-                        <p>Humidity</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <img src="wind.png" alt="wind">
-                    <div>
-                        <p class="wind">15 km/h</p>
-                        <p>Wind Speed</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Animations container - now properly inside the card -->
-        <div class="weather-animations" id="animations"></div>
+ 
+  <!-- Boot / loading screen -->
+  <div class="boot" id="boot">
+    <div class="boot-cloud">
+      <svg viewBox="0 0 100 60" width="90">
+        <ellipse cx="35" cy="35" rx="28" ry="20" fill="#fff" opacity="0.9"/>
+        <ellipse cx="60" cy="28" rx="22" ry="18" fill="#fff" opacity="0.95"/>
+        <ellipse cx="48" cy="22" rx="18" ry="15" fill="#fff"/>
+      </svg>
     </div>
-
-    <script src="javascript.js"></script>
-</body>
-</html>
+    <p>Finding your sky…</p>
+  </div>
+ 
+  <!-- Ambient full-page layer -->
+  <div class="weather-animations" id="animations"></div>
+ 
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="brand">
+      <span class="brand-mark">◐</span> SkyCast
+    </div>
+    <div class="nav-links">
+      <a href="#" class="active">Home</a>
+      <a href="#forecast-section">Forecast</a>
+      <a href="#about-section">About</a>
+    </div>
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+      <span id="themeIcon">🌙</span>
+    </button>
+  </nav>
+ 
+  <div class="page-wrap">
+ 
+    <!-- Top clock/date -->
+    <div class="clock-widget">
+      <div class="clock-day" id="clockDay">—</div>
+      <div class="clock-time" id="clockTime">--:--</div>
+      <div class="clock-date" id="clockDate">—</div>
+    </div>
+ 
+    <div class="card" id="mainCard">
+ 
+      <div class="search">
+        <div class="search-inputwrap">
+          <input type="text" id="cityInput" placeholder="Search a city…" spellcheck="false" autocomplete="off">
+          <div class="suggestions" id="suggestions"></div>
+        </div>
+        <button id="searchBtn" aria-label="Search">
+          <span id="searchBtnIcon">🔍</span>
+        </button>
+      </div>
+ 
+      <div class="recent" id="recentWrap">
+        <span class="recent-label">Recent:</span>
+        <div class="recent-chips" id="recentChips"></div>
+      </div>
+ 
+      <!-- Error state -->
+      <div class="error-panel" id="errorPanel">
+        <div class="error-emoji">❌</div>
+        <h3>City not found</h3>
+        <p>We couldn't find that place. Check the spelling and try again.</p>
+        <button id="errorRetry">Try again</button>
+      </div>
+ 
+      <!-- Weather content -->
+      <div class="weather" id="weatherContent">
+        <div class="icon-stage" id="iconStage"></div>
