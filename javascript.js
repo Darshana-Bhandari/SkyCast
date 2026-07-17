@@ -176,3 +176,40 @@ function flashSearchSuccess(){
   el.searchBtnIcon.textContent = "✓";
   setTimeout(() => { el.searchBtnIcon.textContent = "🔍"; }, 1200);
 }
+async function performCitySearch(){
+  const q = el.input.value.trim();
+  if (!q) return;
+  await fetchByCity(q);
+}
+el.searchBtn.addEventListener("click", performCitySearch);
+el.input.addEventListener("keypress", e => { if (e.key === "Enter") performCitySearch(); });
+el.errorRetry.addEventListener("click", () => { showError(false); el.input.focus(); });
+ 
+/* ---------------------------------------------------------------
+   FETCH ORCHESTRATION
+--------------------------------------------------------------- */
+async function fetchByCity(name){
+  setSearchLoading(true);
+  try{
+    const res = await fetch(`${CONFIG.weatherUrl}?q=${encodeURIComponent(name)}&units=metric&appid=${CONFIG.apiKey}`);
+    if (!res.ok) throw new Error("not found");
+    const data = await res.json();
+    await handleWeatherData(data);
+    saveRecent(data.name);
+    flashSearchSuccess();
+  } catch(e){
+    showError(true);
+  } finally{ setSearchLoading(false); }
+}
+ 
+async function fetchByCoords(lat, lon, fallbackName){
+  setSearchLoading(true);
+  try{
+    const res = await fetch(`${CONFIG.weatherUrl}?lat=${lat}&lon=${lon}&units=metric&appid=${CONFIG.apiKey}`);
+    if (!res.ok) throw new Error("not found");
+    const data = await res.json();
+    await handleWeatherData(data);
+    saveRecent(data.name || fallbackName || "Location");
+    flashSearchSuccess();
+  } catch(e){
+    showError(true);
