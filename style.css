@@ -1,335 +1,97 @@
-* {
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
-    box-sizing: border-box;
+:root{
+  --accent-1:#38bdf8;
+  --accent-2:#7c3aed;
+  --accent-3:#0f172a;
+  --accent-4:#4facfe;
+  --glow-color: rgba(56,189,248,0.45);
+  --card-tint-1: rgba(15,118,128,0.25);
+  --card-tint-2: rgba(88,28,180,0.35);
+  --card-tint-3: rgba(30,58,138,0.30);
+  --text: #ffffff;
+  --text-dim: rgba(255,255,255,0.72);
+  --bg-a:#0f172a;
+  --bg-b:#1e3a8a;
+  --bg-c:#2563eb;
+  --bg-d:#38bdf8;
 }
-
-body {
-    background: #c0e3ee;
-    transition: background 0.6s ease;
-    min-height: 100vh;
+ 
+*{ margin:0; padding:0; box-sizing:border-box; }
+ 
+html{ scroll-behavior:smooth; }
+ 
+body{
+  font-family:'Plus Jakarta Sans', sans-serif;
+  min-height:100vh;
+  color:var(--text);
+  overflow-x:hidden;
+  background:linear-gradient(135deg, var(--bg-a), var(--bg-b), var(--bg-c), var(--bg-d));
+  background-size:400% 400%;
+  animation: bgMove 18s ease infinite alternate;
+  transition: color 0.6s ease;
 }
-
-.card {
-    width: 100%;
-    max-width: 470px;
-    min-height: 380px;
-    margin: 100px auto 0;
-    font-family: 'Poppins', sans-serif;
-
-    background: linear-gradient(
-        135deg,
-        rgba(15, 118, 128, 0.25) 0%,
-        rgba(88, 28, 180, 0.35) 50%,
-        rgba(30, 58, 138, 0.30) 100%
-    );
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-
-    border-radius: 36px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-top: 1px solid rgba(255, 255, 255, 0.35);
-    border-left: 1px solid rgba(255, 255, 255, 0.25);
-
-    padding: 40px 35px;
-
-    box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.5),
-        0 32px 64px rgba(0, 0, 0, 0.4),
-        0 0 0 0.5px rgba(255, 255, 255, 0.08) inset,
-        0 60px 120px rgba(88, 28, 180, 0.3),
-        0 0 80px rgba(15, 118, 128, 0.2);
-
-    color: #fff;
-    text-align: center;
-
-    transition: transform 0.4s cubic-bezier(.23, 1, .32, 1),
-                box-shadow 0.4s ease;
-    cursor: default;
-    position: relative;
-    z-index: 1; /* sit above the full-page animation layer */
-    overflow: hidden;
+ 
+@keyframes bgMove{
+  0%{ background-position:0% 50%; }
+  100%{ background-position:100% 50%; }
 }
-.card::before {
-    content: "";
-    position: absolute;
-    top: -100%;
-    left: -100%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        120deg,
-        transparent,
-        rgba(255,255,255,0.15),
-        transparent
-    );
-    transform: rotate(25deg);
-    animation: shine 8s linear infinite;
+ 
+body::before,
+body::after{
+  content:"";
+  position:fixed;
+  width:380px;
+  height:380px;
+  border-radius:50%;
+  filter:blur(120px);
+  z-index:-2;
+  opacity:0.65;
+  pointer-events:none;
+  transition: background 0.8s ease;
 }
-
-@keyframes shine {
-    100% {
-        left: 100%;
-        top: 100%;
-    }
+body::before{ background:var(--accent-4); top:-140px; left:-100px; }
+body::after{ background:var(--accent-2); bottom:-140px; right:-120px; }
+ 
+/* ============================================================
+   BOOT SCREEN
+   ============================================================ */
+.boot{
+  position:fixed; inset:0; z-index:999;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:18px;
+  background:linear-gradient(135deg,#0f172a,#1e3a8a);
+  transition:opacity .5s ease, visibility .5s ease;
 }
-
-.card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 36px;
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.06) 0%,
-        transparent 50%,
-        rgba(88, 28, 180, 0.1) 100%
-    );
-    pointer-events: none;
+.boot.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+.boot-cloud{ animation:floatCloud 2.4s ease-in-out infinite; }
+@keyframes floatCloud{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-10px);} }
+.boot p{ font-family:'Outfit',sans-serif; font-weight:500; letter-spacing:.03em; color:rgba(255,255,255,0.85); }
+ 
+/* ============================================================
+   AMBIENT WEATHER LAYER (behind everything)
+   ============================================================ */
+.weather-animations{
+  position:fixed; inset:0; width:100vw; height:100vh;
+  pointer-events:none; overflow:hidden; z-index:-3;
 }
-
-.card {
-    animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%,100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
-}
-
-
-/* ====================== WEATHER ANIMATIONS ====================== */
-/* Lives at the BODY level (script.js re-parents it there), covering the
-   full viewport behind the card — so the sun/rain/snow play across the
-   whole page instead of being cropped inside the small card. */
-.weather-animations {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: -1; /* behind the card */
-}
-
-/* Clouds */
-.cloud {
-    position: absolute;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-    filter: blur(8px);
-    animation: moveClouds linear infinite;
-}
-
-@keyframes moveClouds {
-    from { transform: translateX(-200%); }
-    to   { transform: translateX(350%); }
-}
-
-/* Rain & Drizzle */
-.drop {
-    position: absolute;
-    width: 2px;
-    background: linear-gradient(transparent, rgba(255,255,255,0.95));
-    animation: fall linear infinite;
-}
-
-@keyframes fall {
-    to { transform: translateY(110vh); }
-}
-
-/* Snow */
-.snowflake {
-    position: absolute;
-    color: #fff;
-    font-size: 18px;
-    animation: snowfall linear infinite;
-    text-shadow: 0 0 5px #fff;
-}
-
-@keyframes snowfall {
-    to { transform: translateY(110vh) rotate(360deg); }
-}
-
-/* Mist / Fog */
-.mist {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(255,255,255,0.25);
-    animation: mistMove 25s linear infinite;
-    opacity: 0.6;
-}
-
-@keyframes mistMove {
-    0%   { transform: translateX(-30%); }
-    100% { transform: translateX(30%); }
-}
-
-@keyframes sunPulse {
-    0%, 100% { transform: scale(1);    box-shadow: 0 0 40px 20px rgba(255,220,50,0.55), 0 0 80px 40px rgba(255,200,0,0.25); }
-    50%       { transform: scale(1.08); box-shadow: 0 0 55px 28px rgba(255,220,50,0.70), 0 0 100px 55px rgba(255,200,0,0.35); }
-}
-
-@keyframes rotateSun {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-}
-
-@keyframes lightningFlash {
-    0%, 90%, 100% { background: rgba(255,255,255,0); }
-    92%           { background: rgba(255,255,255,0.35); }
-    94%           { background: rgba(255,255,255,0); }
-    96%           { background: rgba(255,255,255,0.2); }
-}
-.search {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 25px;
-    transition: all 0.4s ease;
-    position: relative;
-    z-index: 2;
-}
-
-.search:hover {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-}
-
-.search input {
-    height: 60px;
-    border-radius: 30px;
-    padding: 10px 25px;
-    border: none;
-    outline: none;
-    background: #ebfffc;
-    flex: 1;
-    margin-right: 16px;
-    font-size: 18px;
-    font-family: 'Poppins', sans-serif;
-    transition: all 0.4s ease;
-}
-
-.search input:hover {
-    background: #dffaf5;
-    transform: scale(1.02);
-}
-
-.search input:focus {
-    background: #ffffff;
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
-    transform: scale(1.02);
-}
-
-.search button {
-    height: 60px;
-    width: 60px;
-    border-radius: 50%;
-    border: none;
-    outline: none;
-    background: #ebfffc;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: all 0.3s ease;
-}
-
-.search button:hover {
-    background: #dffaf5;
-    transform: scale(1.05);
-}
-
-.search img {
-    width: 16px;
-}
-
-.weather img {
-    width: 170px;
-    margin-top: 30px;
-    animation: bounce 3s infinite ease-in-out;
-    position: relative;
-    z-index: 2;
-}
-
-@keyframes bounce {
-    0%,100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-8px);
-    }
-}
-
-.weather h1 {
-    font-size: 90px;
-    font-weight: 700;
-    text-shadow:
-        0 0 20px rgba(255,255,255,0.3),
-        0 0 40px rgba(255,255,255,0.2);
-    position: relative;
-    z-index: 2;
-}
-
-.weather h2 {
-    font-size: 45px;
-    font-weight: 400;
-    margin-top: -10px;
-    position: relative;
-    z-index: 2;
-}
-
-.details {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    margin-top: 50px;
-    position: relative;
-    z-index: 2;
-}
-
-.col {
-    display: flex;
-    align-items: center;
-    text-align: left;
-}
-
-.col img {
-    width: 40px;
-    margin-right: 10px;
-}
-
-.humidity,
-.wind {
-    font-size: 28px;
-    margin-top: -6px;
-}
-
-.error-message {
-    color: #ff6b6b;
-    font-size: 14px;
-    margin-top: 12px;
-    display: none;
-}
-
-body.cloudy {
-    background: #c9d6e3;
-}
-
-body.rainy {
-    background: #a8bfd4;
-}
-
-body.sunny {
-    background: #d4f4ff;
-}
-
-body.snowy {
-    background: #e8f4f8;
-}
+.cloud{ position:absolute; background:rgba(255,255,255,0.9); border-radius:50%; filter:blur(8px); animation:moveClouds linear infinite; }
+@keyframes moveClouds{ from{ transform:translateX(-200%);} to{ transform:translateX(350%);} }
+ 
+.drop{ position:absolute; width:2px; background:linear-gradient(transparent, rgba(255,255,255,0.95)); animation:fall linear infinite; }
+@keyframes fall{ to{ transform:translateY(110vh);} }
+ 
+.snowflake{ position:absolute; color:#fff; font-size:18px; animation:snowfall linear infinite; text-shadow:0 0 5px #fff; }
+@keyframes snowfall{ to{ transform:translateY(110vh) rotate(360deg);} }
+ 
+.mist{ position:absolute; inset:0; background:rgba(255,255,255,0.22); animation:mistMove 25s linear infinite; opacity:.6; }
+@keyframes mistMove{ 0%{ transform:translateX(-30%);} 100%{ transform:translateX(30%);} }
+ 
+.star{ position:absolute; background:#fff; border-radius:50%; animation:twinkle ease-in-out infinite; }
+@keyframes twinkle{ 0%,100%{ opacity:.25; } 50%{ opacity:1; } }
+ 
+.moon{ position:absolute; top:8%; right:10%; width:70px; height:70px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #fdfdfd, #d7dee6 60%, #b9c2cc);
+  box-shadow:0 0 40px 14px rgba(255,255,255,0.35); }
+ 
+@keyframes sunPulse{
+  0%,100%{ transform:scale(1); box-shadow:0 0 40px 20px rgba(255,220,50,0.55), 0 0 80px 40px rgba(255,200,0,0.25); }
+  50%{ transform:scale(1.08); box-shadow:0 0 55px 28px rgba(255,220,50,0.70), 0 0 100px 55px rgba(255,200,0,0.35); }
