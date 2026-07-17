@@ -183,3 +183,17 @@ body::after{ background:var(--accent-2); bottom:-140px; right:-120px; }
   width:100%; height:56px; border-radius:28px; padding:10px 22px; border:none; outline:none;
   background:rgba(255,255,255,0.14); color:#fff; font-size:16px; font-family:'Plus Jakarta Sans',sans-serif;
   transition:all .3s ease;
+  
+  
+r;
+  background:#fff; color:#0f172a; font-weight:600; transition:transform .2s ease;
+}
+.error-panel button:hover{ transform:scale(1.05); }
+ 
+/* ============================================================
+   WEATHER CONTENT
+   ============================================================ */
+.weather{ text-align:center; }
+.weather.hide{ display:none; }
+.icon-stage{ width:130px; height:130px; margin:18px auto 0; position:relative; animation:bounce 3s infinite ease-in-out; }
+@keyframes bounce{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-8px);} }
