@@ -105,3 +105,25 @@ if (window.matchMedia("(hover:hover) and (pointer:fine)").matches){
     el.card.style.setProperty("--tiltX", `0deg`);
   });
 }
+
+/* ---------------------------------------------------------------
+   RECENT SEARCHES (localStorage)
+--------------------------------------------------------------- */
+function getRecents(){
+  try { return JSON.parse(localStorage.getItem("skycast-recent") || "[]"); }
+  catch { return []; }
+}
+function saveRecent(name){
+  let list = getRecents().filter(c => c.toLowerCase() !== name.toLowerCase());
+  list.unshift(name);
+  list = list.slice(0, 5);
+  localStorage.setItem("skycast-recent", JSON.stringify(list));
+  renderRecents();
+}
+function renderRecents(){
+  const list = getRecents();
+  el.recentChips.innerHTML = "";
+  if (!list.length){ el.recentWrap.style.display = "none"; return; }
+  el.recentWrap.style.display = "flex";
+  list.forEach(name => {
+    const chip = document.createElement("span");
